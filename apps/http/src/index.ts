@@ -1,7 +1,10 @@
 import express from "express";
-const app = express();
 import client from "@repo/db/client";
+import { router } from "./routes";
 
-app.use("/api/v1");
+const app = express();
+
+app.use("/api/v1", router);
+app.use(express.json());
 
 app.listen(process.env.PORT || 3000);
