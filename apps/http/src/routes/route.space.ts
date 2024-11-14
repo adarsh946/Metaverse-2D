@@ -33,27 +33,37 @@ spaceRouter.post("/", userMiddleware, async (req, res) => {
     select: {
       mapElements: true,
       width: true,
-      height: true
+      height: true,
     },
   });
 
-if (!map ){
-    res.status(400).json(){
-        messege: "map not found"
-    }
-}
+  if (!map) {
+    res.status(400).json({
+      messege: "map not found",
+    });
+    return;
+  }
 
-let space = client.$transaction( async ()=> {
-    const space = client.space.create({
-        data:{
-            name: parsedData.data.name,
-            width: map.width,
-            height: map.height,
-            creatorId: req.userId !
-        }
-    })
-})
-
+  let space = await client.$transaction(async () => {
+    const space = await client.space.create({
+      data: {
+        name: parsedData.data.name,
+        width: map.width,
+        height: map.height,
+        creatorId: req.userId!,
+      },
+    });
+    await client.spaceElements.createMany({
+      data: map.mapElements.map((e) => ({
+        spaceId: space.id,
+        elementId: e.elementId,
+        x: e.x!,
+        y: e.y!,
+      })),
+    });
+    return space;
+  });
+  res.json({ spaceId: space.id });
 });
 
 spaceRouter.delete("/:spaceId");
