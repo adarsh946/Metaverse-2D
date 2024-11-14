@@ -47,7 +47,7 @@ export const allElementSchema = z.object({
   ),
 });
 
-export const createElementSchemav = z.object({
+export const createElementSchema = z.object({
   imageUrl: z.string(),
   width: z.number(),
   height: z.number(),

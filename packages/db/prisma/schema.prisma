@@ -21,7 +21,7 @@ model User {
   avatarId String?
   role     Role
   space    Space[]
-  avatars  Avatar? @relation(fields: [avatarId], references: [id])
+  avatar  Avatar? @relation(fields: [avatarId], references: [id])
 }
 
 model Space {
@@ -29,7 +29,7 @@ model Space {
   name  String
   width Int
   height Int
-  thumbnail String
+  thumbnail String?
   creatorId  String
   creator   User  @relation(fields: [creatorId],  references: [id])
   spaceElements  SpaceElements[]
@@ -59,6 +59,7 @@ model Map {
   name    String
   width   Int
   height  Int
+  thumbnail String
   mapElements MapElements[]
 }
 
@@ -68,8 +69,8 @@ model MapElements {
   mapId      String
   x          Int?
   y          Int?
-  elements   Element @relation(fields: [elementId], references: [id])
-  maps       Map     @relation(fields: [mapId], references: [id])
+  element   Element @relation(fields: [elementId], references: [id])
+  map       Map     @relation(fields: [mapId], references: [id])
 }
 
 model Avatar {
