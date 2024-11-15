@@ -35,18 +35,6 @@ export const deleteElementSchema = z.object({
   id: z.string(),
 });
 
-export const allElementSchema = z.object({
-  elements: z.array(
-    z.object({
-      id: z.string(),
-      imageUrl: z.string(),
-      width: z.number(),
-      height: z.number(),
-      static: z.boolean(),
-    })
-  ),
-});
-
 export const createElementSchema = z.object({
   imageUrl: z.string(),
   width: z.number(),
