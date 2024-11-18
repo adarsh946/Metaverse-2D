@@ -1,5 +1,5 @@
 import type { User } from "./User";
-import { OutgoingMessage } from "./types";
+import { outGoingMesseges } from "./types";
 
 export class RoomManager {
   rooms: Map<string, User[]> = new Map();
@@ -34,11 +34,11 @@ export class RoomManager {
     this.rooms.set(spaceId, [...(this.rooms.get(spaceId) ?? []), user]);
   }
 
-  public broadcast(message: OutgoingMessage, user: User, roomId: string) {
+  public broadcast(message: outGoingMesseges, user: User, roomId: string) {
     if (!this.rooms.has(roomId)) {
       return;
     }
-    this.rooms.get(roomId)?.forEach((u) => {
+    this.rooms.get(roomId)?.forEach((u: any) => {
       if (u.id !== user.id) {
         u.send(message);
       }

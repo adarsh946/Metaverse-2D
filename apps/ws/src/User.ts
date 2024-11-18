@@ -51,8 +51,26 @@ export class User {
           });
           if (!space) {
             this.ws.close();
+            return;
           }
           this.spaceId = spaceId;
+          RoomManager.getInstance().addUser(spaceId, this);
+          this.x = Math.floor(Math.random() * space?.width);
+          this.y = Math.floor(Math.random() * space?.height);
+          this.send({
+            type: "space-joined",
+            payload: {
+              spawn: {
+                x: this.x,
+                y: this.y,
+              },
+              users:
+                RoomManager.getInstance()
+                  .rooms.get(spaceId)
+                  ?.filter((x) => x.id !== this.id)
+                  ?.map((u) => ({ id: u.id })) ?? [],
+            },
+          });
       }
     });
   }
