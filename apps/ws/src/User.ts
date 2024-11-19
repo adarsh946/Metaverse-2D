@@ -3,6 +3,7 @@ import { WebSocket } from "ws";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { JWT_PASSWORD } from "./config";
 import { RoomManager } from "./RoomManager";
+import { outGoingMesseges } from "./types";
 
 const getStringId = (length: number) => {
   const characters =
@@ -71,7 +72,66 @@ export class User {
                   ?.map((u) => ({ id: u.id })) ?? [],
             },
           });
+          RoomManager.getInstance().broadcast(
+            {
+              type: "space-joined",
+              payload: {
+                userId: this.userId,
+                x: this.x,
+                y: this.y,
+              },
+            },
+            this,
+            this.spaceId!
+          );
+          break;
+        case "move":
+          const moveX = parsedData.payload.x;
+          const moveY = parsedData.payload.y;
+          const xDisplacement = Math.abs(this.x - moveX);
+          const yDisplacement = Math.abs(this.y - moveY);
+          if (
+            (xDisplacement == 1 && yDisplacement == 0) ||
+            (xDisplacement == 0 && yDisplacement == 1)
+          ) {
+            RoomManager.getInstance().broadcast(
+              {
+                type: "movement",
+                payload: {
+                  x: this.x,
+                  y: this.y,
+                },
+              },
+              this,
+              this.spaceId!
+            );
+            return;
+          }
+          this.send({
+            type: "movement-rejected",
+            payload: {
+              x: this.x,
+              y: this.y,
+            },
+          });
       }
     });
+  }
+
+  destroy() {
+    RoomManager.getInstance().broadcast(
+      {
+        type: "user-left",
+        payload: {
+          userId: this.userId,
+        },
+      },
+      this,
+      this.spaceId!
+    );
+    RoomManager.getInstance().removeUser(this, this.spaceId!);
+  }
+  send(payload: outGoingMesseges) {
+    this.ws.send(JSON.stringify(payload));
   }
 }
